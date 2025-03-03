@@ -3,6 +3,7 @@ import Pagination from "../components/pagination";
 import ProductModal from "../components/ProductModal";
 import DelProductModal from "../components/DelProductModal";
 import axios from "axios";
+import Toast from "../components/Toast";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -20,7 +21,7 @@ const defaultModalState = {
   imagesUrl: [""],
 };
 
-function ProductPage() {
+function ProductPage({ setIsAuth }) {
   const [pageInfo, setPageInfo] = useState({});
   const [products, setProducts] = useState([]);
   const [modalMode, setModalMode] = useState(null);
@@ -72,9 +73,30 @@ function ProductPage() {
     getProducts(page);
   };
 
+  const handleLogOut = async () => {
+    try {
+      await axios.post(`${BASE_URL}/v2/logout`);
+      setIsAuth(false);
+    } catch (error) {
+      alert("登出失敗");
+    }
+  };
+
   return (
     <>
       <div className="container py-5">
+        <div className="row mb-3">
+          <div className="justify-content-end">
+            <button
+              onClick={handleLogOut}
+              type="button"
+              className="btn btn-secondary"
+            >
+              登出
+            </button>
+          </div>
+        </div>
+
         <div className="row">
           <div className="col">
             <div className="d-flex justify-content-between">
@@ -156,6 +178,8 @@ function ProductPage() {
         isOpen={isDelProductModalOpen}
         setIsOpen={setIsDelProductModalOpen}
       />
+
+      <Toast />
     </>
   );
 }
